@@ -1,6 +1,6 @@
 FROM tomcat:9.0.106
 
-COPY COPY webapps/* /usr/local/tomcat/webapps/
+COPY webapps/* /usr/local/tomcat/webapps/
 
 EXPOSE 8080
 
