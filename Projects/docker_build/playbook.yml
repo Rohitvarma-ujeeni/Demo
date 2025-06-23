@@ -1,0 +1,52 @@
+---
+- name: Install Docker and Run Docker Image on target Build Server
+  hosts: target_build_node
+  become: yes
+
+  tasks:
+    - name: Install Docker io
+      apt:
+        name: docker.io
+        state: present
+        update_cache: yes
+
+    - name: Start and enable Docker
+      systemd:
+        name: docker
+        enabled: yes
+        state: started
+
+    - name: Create Docker image archive on production (local)
+      delegate_to: localhost
+      become: false
+      command: docker save -o /tmp/tomcat_image.tar tomcat
+
+    - name: Copy Docker image to target build server
+      copy:
+        src: /tmp/tomcat_image.tar
+        dest: /tmp/tomcat_image.tar
+
+    - name: Load Docker image on target build server
+      command: docker load -i /tmp/tomcat_image.tar
+
+    - name: Get list of images
+      command: docker images
+      register: Docker_images
+      ignore_errors: yes
+
+    - name: Print docker images
+      debug:
+        var: Docker_images.stdout_lines
+
+    - name: Run container from image
+      command: docker run -itd -p 8080:8080 tomcat
+
+    - name: Container List and status
+      command: docker ps -a
+      register: Containers_status
+      ignore_errors: yes
+
+    - name: Print Containers list
+      debug:
+        var: Containers_status.stdout_lines
+

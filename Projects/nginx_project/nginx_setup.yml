@@ -1,0 +1,8 @@
+---
+- name: Apply NGINX Role
+  hosts: target_build_node:wq
+  become: yes
+
+  roles:
+    - nginx_role
+

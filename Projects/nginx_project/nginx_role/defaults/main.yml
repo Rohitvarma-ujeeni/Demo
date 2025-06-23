@@ -1,0 +1,5 @@
+---
+# defaults file for nginx_role
+# define variables here if needed, for example:
+nginx_package: nginx
+

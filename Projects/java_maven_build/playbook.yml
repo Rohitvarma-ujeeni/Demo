@@ -1,0 +1,55 @@
+---
+- name: Setup Java Maven Build Server
+  hosts: target_build_node
+  become: yes
+
+  tasks:
+    - name: Update apt cache
+      apt:
+        update_cache: yes
+      when: ansible_distribution == "Ubuntu"
+
+    - name: Install Java (OpenJDK 11)
+      apt:
+        name: openjdk-11-jdk
+        state: present
+      when: ansible_distribution == "Ubuntu"
+
+    - name: Install Maven
+      apt:
+        name: maven
+        state: present
+      when: ansible_distribution == "Ubuntu"
+
+    - name: Install Git
+      apt:
+        name: git
+        state: present
+      when: ansible_distribution == "Ubuntu"
+
+    - name: Verify Java installation
+      command: java -version
+      register: java_output
+      ignore_errors: yes
+
+    - name: Print Java version
+      debug:
+        var: java_output.stdout_lines
+
+    - name: Verify Maven installation
+      command: mvn -version
+      register: mvn_output
+      ignore_errors: yes
+
+    - name: Print Maven version
+      debug:
+        var: mvn_output.stdout_lines
+    
+    - name: Verify Git installation
+      command: git --version
+      register: git_output
+      ignore_errors: yes
+
+    - name: Print Git version
+      debug:
+        var: git_output.stdout_lines
